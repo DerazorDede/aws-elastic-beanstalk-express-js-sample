@@ -8,18 +8,31 @@ pipeline {
         }
         
         stage('Install Dependencies') {
+            agent {
+                docker {
+                    image 'node:16'
+                    args '-u root'
+                }
+            }
             steps {
                 sh 'npm install --save'
             }
         }
         
         stage('Unit Test') {
+            agent {
+                docker {
+                    image 'node:16'
+                    args '-u root'
+                }
+            }
             steps {
                 sh 'npm test'
             }
         }
         
         stage('Security Scan') {
+            agent any
             steps {
                 sh '''
                     # Download and run OWASP Dependency-Check
@@ -43,6 +56,7 @@ pipeline {
         }
         
         stage('Build Docker Image') {
+            agent any
             steps {
                 script {
                     docker.build("my-node-app:${env.BUILD_ID}")
